@@ -1,0 +1,24 @@
+{
+  "name": "@jaspero/academy",
+  "version": "0.0.0-development",
+  "description": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "dev": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jaspero/academy.git"
+  },
+  "author": {
+    "name": "Jaspero Ltd",
+    "email": "info@jaspero.co"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jaspero/academy/issues"
+  },
+  "homepage": "https://github.com/Jaspero/academy#readme"
+}
