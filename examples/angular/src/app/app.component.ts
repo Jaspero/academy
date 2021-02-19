@@ -7,10 +7,8 @@ import Academy from '@jaspero/academy';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  constructor() {
-  }
+  constructor() { }
 
-  title = 'angular';
   // @ts-ignore
   academy: Academy;
 
@@ -18,8 +16,10 @@ export class AppComponent implements OnInit {
     this.academy = new Academy({
       mount: [
         {
-          type: 'description',
-          element: '#description'
+          type: 'description'
+        },
+        {
+          type: 'editor'
         }
       ]
     });
@@ -28,6 +28,16 @@ export class AppComponent implements OnInit {
       name: 'test',
       description: `Click 'Validate'!`,
       validate: () => true
+    });
+    this.academy.addStep({
+      name: 'test1.2',
+      description: `Click 'Validate' and DO NOT write anything in the textbox!`,
+      validate: (content) => content === ''
+    });
+    this.academy.addStep({
+      name: 'test1.5',
+      description: `Write '123'`,
+      validate: (content) => content === '123'
     });
     this.academy.addStep({
       name: 'test2',
@@ -48,7 +58,7 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    if (this.academy.currentStep.valid) {
+    if (this.academy.valid) {
       this.academy.nextStep();
     } else {
       console.log('bad');

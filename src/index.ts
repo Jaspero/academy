@@ -9,8 +9,6 @@ export interface StepConfig {
      */
     start?: string;
 
-    tests?: any;
-
     /**
      * Description of required task
      */
@@ -24,7 +22,7 @@ export interface StepConfig {
     /**
      * Validate Function to compare result
      */
-    validate?: () => boolean;
+    validate?: (content: string) => boolean;
 }
 
 export class Step {
@@ -41,16 +39,20 @@ export class Step {
     start: string;
     description: string;
     solution: string;
-    validate: () => boolean;
-
-    get valid() {
-        return this.validate();
-    }
+    validate: (content: string) => boolean;
 }
 
 export interface MountConfig {
+    /**
+     * Type of component to mount to
+     */
     type: 'description' | 'editor' | 'result';
-    element: string;
+
+    /**
+     * Element to which attach component
+     * @default 'academy-{type}'
+     */
+    element?: string;
 }
 
 export interface AcademyConfig {
@@ -70,7 +72,7 @@ export class Academy {
 
     private _elements: {
         description: AcademyDescriptionElement | null,
-        editor: Element | null,
+        editor: AcademyEditorElement | null,
         result: Element | null
     } = {
         description: null,
@@ -85,7 +87,12 @@ export class Academy {
         return this._currentStep;
     }
 
+    get valid() {
+        return this.currentStep?.validate(this._elements.editor?.value || '');
+    }
+
     mount(config: MountConfig) {
+        config.element = config.element || `academy-${config.type}`;
         this._elements[config.type] = document.querySelector(config.element);
 
         if (!this._elements[config.type]) {
@@ -117,6 +124,10 @@ export class Academy {
 
         if (this._elements.description) {
             this._elements.description.innerHTML = this._currentStep?.description || '';
+        }
+
+        if (this._elements.editor) {
+            this._elements.editor.reset();
         }
     }
 
@@ -157,4 +168,24 @@ class AcademyDescriptionElement extends HTMLElement {
     // }
 }
 
+class AcademyEditorElement extends HTMLElement {
+
+    get value() {
+        const textarea = this.querySelector('textarea');
+        return textarea?.value || '';
+    }
+
+    reset() {
+        const textarea = this.querySelector('textarea');
+        if (textarea) {
+            textarea.value = '';
+        }
+    }
+
+    connectedCallback() {
+        this.innerHTML = '<textarea></textarea>';
+    }
+}
+
 customElements.define('academy-description', AcademyDescriptionElement);
+customElements.define('academy-editor', AcademyEditorElement);
