@@ -43,13 +43,12 @@ export class Academy {
 
     constructor() {
         this._steps = [];
-        this._currentStep = null;
         console.log(document);
     }
 
     private _steps: Step[];
 
-    private _currentStep: string | null;
+    private _currentStep: Step | undefined;
 
     get currentStep() {
         return this._currentStep;
@@ -71,7 +70,7 @@ export class Academy {
     }
 
     startStep(name: string) {
-        this._currentStep = name;
+        this._currentStep = this._steps.find(step => step.name === name);
     }
 
     private stepExists(name: string) {
