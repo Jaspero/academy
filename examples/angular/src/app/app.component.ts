@@ -15,7 +15,7 @@ export class AppComponent {
     a.addStep({name: 'test'});
     a.addStep({name: 'test2'});
 
-    console.log(a.steps);
+    // console.log(a.steps);
     // a.step({name: 'test'})
 
     // console.log(a.steps);

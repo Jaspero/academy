@@ -44,6 +44,7 @@ export class Academy {
     constructor() {
         this._steps = [];
         this._currentStep = null;
+        console.log(document);
     }
 
     private _steps: Step[];
@@ -79,3 +80,11 @@ export class Academy {
 }
 
 export default Academy;
+
+class AcademyDescription extends HTMLElement {
+    connectedCallback() {
+        this.textContent = 'Academy Description Element';
+    }
+}
+
+customElements.define('academy-description', AcademyDescription);
