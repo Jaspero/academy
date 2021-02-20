@@ -33,6 +33,7 @@ export class Step {
         this.description = options.description || '';
         this.solution = options.solution || '';
         this.validate = options.validate || (() => true);
+        this.index = 0;
     }
 
     name: string;
@@ -40,6 +41,7 @@ export class Step {
     description: string;
     solution: string;
     validate: (content: string) => boolean;
+    index: number;
 }
 
 export interface MountConfig {
@@ -107,7 +109,8 @@ export class Academy {
             throw new Error(`Duplicate 'name' identifier!`);
         }
 
-        this._steps.push(step);
+        const index = this._steps.push(step);
+        this._steps[index - 1].index = index;
         return step;
     }
 

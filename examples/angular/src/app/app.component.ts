@@ -30,14 +30,25 @@ export class AppComponent implements OnInit {
       validate: () => true
     });
     this.academy.addStep({
-      name: 'test1.2',
-      description: `Click 'Validate' and DO NOT write anything in the textbox!`,
-      validate: (content) => content === ''
+      name: 'test1',
+      description: `Write '123'`,
+      validate: (content) => {
+        if (content === '123') {
+          return true;
+        }
+
+        if (content === `'123'`) {
+          alert('Ha ha, good one');
+          return true;
+        }
+
+        return false;
+      }
     });
     this.academy.addStep({
       name: 'test1.5',
-      description: `Write '123'`,
-      validate: (content) => content === '123'
+      description: `Click 'Validate' and DO NOT write anything in the textbox!`,
+      validate: (content) => content === ''
     });
     this.academy.addStep({
       name: 'test2',
