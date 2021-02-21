@@ -1,3 +1,5 @@
+const monaco = require('monaco-editor');
+
 export interface StepConfig {
     /**
      * Unique Identifier
@@ -186,7 +188,21 @@ class AcademyEditorElement extends HTMLElement {
     }
 
     connectedCallback() {
-        this.innerHTML = '<textarea></textarea>';
+
+        const element = document.createElement('div');
+        element.style.height = '300px';
+
+        this.appendChild(element);
+
+        const editor = monaco.editor.create(element, {
+            automaticLayout: true,
+            language: 'javascript'
+            // language: props.language,
+            // minimap: { enabled: false },
+            // autoIndent: true
+        });
+
+        editor.focus();
     }
 }
 
