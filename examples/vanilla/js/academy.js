@@ -598,6 +598,7 @@
   }
   class Academy {
       constructor(options = {}) {
+          var _a, _b;
           this._elements = {
               description: null,
               editor: null,
@@ -607,6 +608,11 @@
           const mount = options.mount || [];
           for (const item of mount) {
               this.mount(item);
+          }
+          const editor = options.editor || {};
+          if (editor.monaco) {
+              (_a = this._elements.editor) === null || _a === void 0 ? void 0 : _a.updateLanguage(editor.monaco.language || '');
+              (_b = this._elements.editor) === null || _b === void 0 ? void 0 : _b.updateTheme(editor.monaco.theme || '');
           }
       }
       static get Step() {
@@ -670,6 +676,11 @@
   class AcademyEditorElement extends HTMLElement {
       constructor() {
           super();
+          this.monacoOptions = {
+              automaticLayout: true,
+              minimap: { enabled: false },
+              autoIndent: true
+          };
           this.type = EditorType.Monaco;
       }
       static get observedAttributes() {
@@ -688,7 +699,7 @@
                   break;
               }
               case 'monaco': {
-                  return this.monaco.getValue();
+                  return this.monacoEditor.getValue();
               }
               case 'textarea': {
                   const textarea = this.querySelector('textarea');
@@ -715,7 +726,7 @@
                   break;
               }
               case 'monaco': {
-                  (_b = (_a = this.monaco) === null || _a === void 0 ? void 0 : _a.getModel()) === null || _b === void 0 ? void 0 : _b.setValue('');
+                  (_b = (_a = this.monacoEditor) === null || _a === void 0 ? void 0 : _a.getModel()) === null || _b === void 0 ? void 0 : _b.setValue('');
                   break;
               }
               case 'textarea': {
@@ -739,23 +750,35 @@
               }
               case 'monaco': {
                   const element = document.createElement('div');
-                  element.style.height = '300px';
                   this.appendChild(element);
                   loader.init().then((monaco) => {
-                      this.monaco = monaco.editor.create(element, {
-                          automaticLayout: true,
-                          language: 'javascript'
-                          // language: props.language,
-                          // minimap: { enabled: false },
-                          // autoIndent: true
-                      });
-                      this.monaco.focus();
+                      this.monaco = monaco;
+                      this.monacoEditor = monaco.editor.create(element, this.monacoOptions);
+                      this.monacoEditor.focus();
                   });
                   break;
               }
               case 'textarea': {
                   this.innerHTML = '<textarea></textarea>';
               }
+          }
+      }
+      updateTheme(theme) {
+          var _a;
+          if ((_a = this.monaco) === null || _a === void 0 ? void 0 : _a.editor) {
+              this.monaco.editor.setTheme(theme);
+          }
+          else {
+              this.monacoOptions = Object.assign(Object.assign({}, this.monacoOptions), { theme });
+          }
+      }
+      updateLanguage(language) {
+          var _a, _b;
+          if ((_a = this.monaco) === null || _a === void 0 ? void 0 : _a.editor) {
+              this.monaco.editor.setModelLanguage((_b = this.monacoEditor) === null || _b === void 0 ? void 0 : _b.getModel(), language);
+          }
+          else {
+              this.monacoOptions = Object.assign(Object.assign({}, this.monacoOptions), { language });
           }
       }
   }

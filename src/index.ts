@@ -216,7 +216,6 @@ class AcademyEditorElement extends HTMLElement {
             }
             case 'monaco': {
                 const element = document.createElement('div');
-                element.style.height = '300px';
 
                 this.appendChild(element);
 
