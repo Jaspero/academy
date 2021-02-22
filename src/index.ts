@@ -30,6 +30,12 @@ class Academy {
         for (const item of mount) {
             this.mount(item);
         }
+
+        const editor = options.editor || {};
+        if (editor.monaco) {
+            this._elements.editor?.updateLanguage(editor.monaco.language || '');
+            this._elements.editor?.updateTheme(editor.monaco.theme || '');
+        }
     }
 
     private _elements: {
@@ -127,6 +133,14 @@ class AcademyEditorElement extends HTMLElement {
 
     type: EditorType;
     monaco: any;
+    monacoEditor: any;
+    monacoOptions: {
+        [key: string]: any
+    } = {
+        automaticLayout: true,
+        minimap: { enabled: false },
+        autoIndent: true
+    };
 
     static get observedAttributes() {
         return ['editor'];
@@ -147,7 +161,7 @@ class AcademyEditorElement extends HTMLElement {
                 break;
             }
             case 'monaco': {
-                return this.monaco.getValue();
+                return this.monacoEditor.getValue();
             }
             case 'textarea': {
                 const textarea = this.querySelector('textarea');
@@ -176,7 +190,7 @@ class AcademyEditorElement extends HTMLElement {
                 break;
             }
             case 'monaco': {
-                this.monaco?.getModel()?.setValue('');
+                this.monacoEditor?.getModel()?.setValue('');
                 break;
             }
             case 'textarea': {
@@ -207,21 +221,38 @@ class AcademyEditorElement extends HTMLElement {
                 this.appendChild(element);
 
                 loader.init().then((monaco: Monaco) => {
-                    this.monaco = monaco.editor.create(element, {
-                        automaticLayout: true,
-                        language: 'javascript'
-                        // language: props.language,
-                        // minimap: { enabled: false },
-                        // autoIndent: true
-                    });
+                    this.monaco = monaco;
+                    this.monacoEditor = monaco.editor.create(element, this.monacoOptions);
 
-                    this.monaco.focus();
+                    this.monacoEditor.focus();
                 });
                 break;
             }
             case 'textarea': {
                 this.innerHTML = '<textarea></textarea>';
             }
+        }
+    }
+
+    updateTheme(theme: string) {
+        if (this.monaco?.editor) {
+            this.monaco.editor.setTheme(theme);
+        } else {
+            this.monacoOptions = {
+                ...this.monacoOptions,
+                theme
+            };
+        }
+    }
+
+    updateLanguage(language: string) {
+        if (this.monaco?.editor) {
+            this.monaco.editor.setModelLanguage(this.monacoEditor?.getModel(), language);
+        } else {
+            this.monacoOptions = {
+                ...this.monacoOptions,
+                language
+            };
         }
     }
 }

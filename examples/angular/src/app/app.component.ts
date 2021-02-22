@@ -23,7 +23,13 @@ export class AppComponent implements OnInit {
         {
           type: 'editor'
         }
-      ]
+      ],
+      editor: {
+        monaco: {
+          theme: 'vs-dark',
+          language: 'javascript'
+        }
+      }
     });
 
     this.academy.addStep({
