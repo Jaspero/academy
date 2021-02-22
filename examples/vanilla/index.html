@@ -1,0 +1,43 @@
+<html lang="en">
+    <head>
+        <title>Vanilla Examples</title>
+
+        <script src="js/academy.js"></script>
+    </head>
+
+    <body>
+        <academy-description id="myDescription"></academy-description>
+        <academy-editor id="myEditor"></academy-editor>
+
+        <academy-editor editor="textarea"></academy-editor>
+
+        <script>
+            const academy = new Academy({
+                mount: [
+                    {
+                        type: 'description',
+                        element: '#myDescription'
+                    },
+                    {
+                        type: 'editor',
+                        element: '#myEditor'
+                    }
+                ],
+                editor: {
+                    monaco: {
+
+                    }
+                }
+            });
+
+            academy.addStep({
+                name: 'step1',
+                description: 'Test Description!'
+            });
+
+            academy.startStep('step1');
+
+            console.log('Academy', Academy);
+        </script>
+    </body>
+</html>

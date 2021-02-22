@@ -12,6 +12,8 @@ export class AppComponent implements OnInit {
   // @ts-ignore
   academy: Academy;
 
+  type = 'monaco';
+
   ngOnInit() {
     this.academy = new Academy({
       mount: [
@@ -32,7 +34,7 @@ export class AppComponent implements OnInit {
     this.academy.addStep({
       name: 'test1',
       description: `Write '123'`,
-      validate: (content) => {
+      validate: (content: any) => {
         if (content === '123') {
           return true;
         }
@@ -48,7 +50,7 @@ export class AppComponent implements OnInit {
     this.academy.addStep({
       name: 'test1.5',
       description: `Click 'Validate' and DO NOT write anything in the textbox!`,
-      validate: (content) => content === ''
+      validate: (content: any) => content === ''
     });
     this.academy.addStep({
       name: 'test2',

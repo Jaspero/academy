@@ -1,34 +1,10 @@
-const monaco = require('monaco-editor');
+import loader, { Monaco } from '@monaco-editor/loader';
+import { EditorType } from './enums/editor-type.enum';
+import { AcademyConfig } from './interfaces/academy-config.interface';
+import { MountConfig } from './interfaces/mount-config.interface';
+import { StepConfig } from './interfaces/step-config.interface';
 
-export interface StepConfig {
-    /**
-     * Unique Identifier
-     */
-    name: string;
-
-    /**
-     * Starting text to appear in editor
-     */
-    start?: string;
-
-    /**
-     * Description of required task
-     */
-    description?: string;
-
-    /**
-     * Solution which appears when requested with `showSolution`
-     */
-    solution?: string;
-
-    /**
-     * Validate Function to compare result
-     */
-    validate?: (content: string) => boolean;
-}
-
-export class Step {
-
+class Step {
     constructor(options: StepConfig) {
         this.name = options.name;
         this.start = options.start || '';
@@ -46,25 +22,7 @@ export class Step {
     index: number;
 }
 
-export interface MountConfig {
-    /**
-     * Type of component to mount to
-     */
-    type: 'description' | 'editor' | 'result';
-
-    /**
-     * Element to which attach component
-     * @default 'academy-{type}'
-     */
-    element?: string;
-}
-
-export interface AcademyConfig {
-    mount?: MountConfig[];
-}
-
-export class Academy {
-
+class Academy {
     constructor(options: AcademyConfig = {}) {
         this._steps = [];
 
@@ -84,6 +42,10 @@ export class Academy {
         result: null
     };
     private _steps: Step[];
+
+    static get Step() {
+        return Step;
+    }
 
     private _currentStep: Step | undefined;
 
@@ -153,58 +115,118 @@ export class Academy {
     }
 }
 
-export default Academy;
-
 class AcademyDescriptionElement extends HTMLElement {
-    // connectedCallback() {
-    //     this.innerHTML = 'Academy Description Element';
-    // }
-
-    // static get observedAttributes() {
-    //     return ['content', 'data', 'data-', 'data-content'];
-    // }
-    //
-    // attributeChangedCallback(attribute: string, before: string, after: string) {
-    //     console.log('attributeChangedCallback', {attribute, before, after});
-    //
-    //     if (attribute === 'content') {
-    //         this.innerHTML = after;
-    //     }
-    // }
 }
 
 class AcademyEditorElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.type = EditorType.Monaco;
+    }
+
+    type: EditorType;
+    monaco: any;
+
+    static get observedAttributes() {
+        return ['editor'];
+    }
+
+    set editor(value: EditorType) {
+        if (this.type === value) {
+            return;
+        }
+
+        this.type = value;
+        this.initEditor();
+    }
 
     get value() {
-        const textarea = this.querySelector('textarea');
-        return textarea?.value || '';
+        switch (this.type) {
+            case 'custom': {
+                break;
+            }
+            case 'monaco': {
+                return this.monaco.getValue();
+            }
+            case 'textarea': {
+                const textarea = this.querySelector('textarea');
+                return textarea?.value || '';
+            }
+        }
+    }
+
+    attributeChangedCallback(attribute: string, before: string, after: EditorType) {
+        console.log('attributeChangedCallback', {attribute, before, after});
+        if (before === after) {
+            return;
+        }
+
+        if (attribute === 'editor') {
+            if (this.type !== after) {
+                this.type = after;
+                this.initEditor();
+            }
+        }
     }
 
     reset() {
-        const textarea = this.querySelector('textarea');
-        if (textarea) {
-            textarea.value = '';
+        switch (this.type) {
+            case 'custom': {
+                break;
+            }
+            case 'monaco': {
+                this.monaco?.getModel()?.setValue('');
+                break;
+            }
+            case 'textarea': {
+                const textarea = this.querySelector('textarea');
+                if (textarea) {
+                    textarea.value = '';
+                }
+                break;
+            }
         }
     }
 
     connectedCallback() {
+        console.log('connectedCallback');
+        this.initEditor();
+    }
 
-        const element = document.createElement('div');
-        element.style.height = '300px';
+    initEditor() {
+        this.innerHTML = '';
+        switch (this.type) {
+            case 'custom': {
+                break;
+            }
+            case 'monaco': {
+                const element = document.createElement('div');
+                element.style.height = '300px';
 
-        this.appendChild(element);
+                this.appendChild(element);
 
-        const editor = monaco.editor.create(element, {
-            automaticLayout: true,
-            language: 'javascript'
-            // language: props.language,
-            // minimap: { enabled: false },
-            // autoIndent: true
-        });
+                loader.init().then((monaco: Monaco) => {
+                    this.monaco = monaco.editor.create(element, {
+                        automaticLayout: true,
+                        language: 'javascript'
+                        // language: props.language,
+                        // minimap: { enabled: false },
+                        // autoIndent: true
+                    });
 
-        editor.focus();
+                    this.monaco.focus();
+                });
+                break;
+            }
+            case 'textarea': {
+                this.innerHTML = '<textarea></textarea>';
+            }
+        }
     }
 }
 
 customElements.define('academy-description', AcademyDescriptionElement);
 customElements.define('academy-editor', AcademyEditorElement);
+
+export default Academy;
