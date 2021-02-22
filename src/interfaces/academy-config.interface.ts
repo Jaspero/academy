@@ -1,4 +1,4 @@
-import { EditorType } from './editor-type.interface';
+import { EditorType } from '../enums/editor-type.enum';
 import { MountConfig } from './mount-config.interface';
 
 export interface AcademyConfig {
