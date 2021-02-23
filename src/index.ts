@@ -203,7 +203,6 @@ class AcademyEditorElement extends HTMLElement {
     }
 
     connectedCallback() {
-
         this.initEditor();
     }
 

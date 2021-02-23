@@ -5,7 +5,7 @@
   "main": "./dist/academy.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "tsc --watch",
+    "dev": "tsc-watch --onSuccess \"rollup --config\"",
     "dev:angular": "concurrently 'npm run dev' 'npm run start --prefix examples/angular'",
     "build": "tsc && rollup --config"
   },
@@ -28,7 +28,8 @@
     "concurrently": "6.0.0",
     "rollup": "2.39.0",
     "rollup-plugin-node-resolve": "5.2.0",
-    "typescript": "^4.1.5"
+    "tsc-watch": "4.2.9",
+    "typescript": "4.1.5"
   },
   "dependencies": {
     "@monaco-editor/loader": "1.0.0"
