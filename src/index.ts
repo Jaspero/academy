@@ -171,7 +171,6 @@ class AcademyEditorElement extends HTMLElement {
     }
 
     attributeChangedCallback(attribute: string, before: string, after: EditorType) {
-        console.log('attributeChangedCallback', {attribute, before, after});
         if (before === after) {
             return;
         }
@@ -204,7 +203,7 @@ class AcademyEditorElement extends HTMLElement {
     }
 
     connectedCallback() {
-        console.log('connectedCallback');
+
         this.initEditor();
     }
 
@@ -216,13 +215,13 @@ class AcademyEditorElement extends HTMLElement {
             }
             case 'monaco': {
                 const element = document.createElement('div');
+                element.style.height = '100px';
 
                 this.appendChild(element);
 
                 loader.init().then((monaco: Monaco) => {
                     this.monaco = monaco;
                     this.monacoEditor = monaco.editor.create(element, this.monacoOptions);
-
                     this.monacoEditor.focus();
                 });
                 break;
