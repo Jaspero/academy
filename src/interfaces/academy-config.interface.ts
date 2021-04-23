@@ -8,6 +8,9 @@ export interface AcademyConfig {
         monaco?: {
             theme?: 'vs' | 'vs-dark' | 'hc-black',
             language?: string;
+            tabSize?: number;
+            [key: string]: any;
         }
-    }
+    },
+    notification?: (message: string, error?: boolean) => void;
 }

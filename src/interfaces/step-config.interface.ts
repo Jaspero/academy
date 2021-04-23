@@ -7,7 +7,7 @@ export interface StepConfig {
     /**
      * Starting text to appear in editor
      */
-    start?: string;
+    startWith?: string;
 
     /**
      * Description of required task
@@ -23,4 +23,17 @@ export interface StepConfig {
      * Validate Function to compare result
      */
     validate?: (content: string) => boolean;
+
+    /**
+     * Language syntax for current Step
+     * Otherwise uses default editor language
+     */
+    language?: string;
+
+    /**
+     * Metadata supplied to step
+     */
+    metadata?: {
+        [key: string]: any;
+    };
 }

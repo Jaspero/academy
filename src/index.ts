@@ -1,5 +1,9 @@
-import loader, { Monaco } from '@monaco-editor/loader';
-import { EditorType } from './enums/editor-type.enum';
+import './elements/academy-description.element';
+import { AcademyDescriptionElement } from './elements/academy-description.element';
+import './elements/academy-editor.element';
+import { AcademyEditorElement } from './elements/academy-editor.element';
+import './elements/academy-result.element';
+import { AcademyResultElement } from './elements/academy-result.element';
 import { AcademyConfig } from './interfaces/academy-config.interface';
 import { MountConfig } from './interfaces/mount-config.interface';
 import { StepConfig } from './interfaces/step-config.interface';
@@ -7,23 +11,30 @@ import { StepConfig } from './interfaces/step-config.interface';
 class Step {
     constructor(options: StepConfig) {
         this.name = options.name;
-        this.start = options.start || '';
+        this.startWith = options.startWith || '';
         this.description = options.description || '';
         this.solution = options.solution || '';
-        this.validate = options.validate || (() => true);
+        this.validate = options.validate || null;
+        this.language = options.language;
+        this.metadata = options.metadata || {};
         this.index = 0;
     }
 
     name: string;
-    start: string;
+    startWith: string;
     description: string;
     solution: string;
-    validate: (content: string) => boolean;
+    validate: ((content: string) => boolean) | null;
+    language: string | undefined;
+    metadata: {
+        [key: string]: any;
+    };
     index: number;
 }
 
 class Academy {
     constructor(options: AcademyConfig = {}) {
+        this._options = options;
         this._steps = [];
 
         const mount = options.mount || [];
@@ -33,21 +44,24 @@ class Academy {
 
         const editor = options.editor || {};
         if (editor.monaco) {
-            this._elements.editor?.updateLanguage(editor.monaco.language || '');
-            this._elements.editor?.updateTheme(editor.monaco.theme || '');
+            this._elements.editor?.updateOptions(editor.monaco);
         }
+
+        this.notify = options.notification || ((message, error) => alert(message));
     }
 
+    notify: (message: string, error?: boolean) => void;
     private _elements: {
         description: AcademyDescriptionElement | null,
         editor: AcademyEditorElement | null,
-        result: Element | null
+        result: AcademyResultElement | null
     } = {
         description: null,
         editor: null,
         result: null
     };
     private _steps: Step[];
+    private _options: AcademyConfig;
 
     static get Step() {
         return Step;
@@ -55,12 +69,30 @@ class Academy {
 
     private _currentStep: Step | undefined;
 
+    get steps() {
+        return this._steps;
+    }
+
     get currentStep() {
         return this._currentStep;
     }
 
     get valid() {
-        return this.currentStep?.validate(this._elements.editor?.value || '');
+        return this.currentStep?.validate === null ? true : this.currentStep?.validate(this._elements.editor?.value || '');
+    }
+
+    get editor() {
+        return this._elements.editor;
+    }
+
+    clearSteps() {
+        console.log(this);
+        this._steps = [];
+        this._currentStep = undefined;
+        this._elements.editor?.reset();
+        if (this._elements.description) {
+            this._elements.description.innerHTML = '';
+        }
     }
 
     mount(config: MountConfig) {
@@ -79,8 +111,8 @@ class Academy {
             throw new Error(`Duplicate 'name' identifier!`);
         }
 
-        const index = this._steps.push(step);
-        this._steps[index - 1].index = index;
+        const index = this._steps.push(step) - 1;
+        this._steps[index].index = index;
         return step;
     }
 
@@ -101,17 +133,52 @@ class Academy {
 
         if (this._elements.editor) {
             this._elements.editor.reset();
+            this._elements.editor.setValue(this.currentStep?.startWith);
+        }
+
+        if (this.currentStep?.language) {
+            this._elements.editor?.updateOptions({
+                language: this.currentStep.language
+            });
+        } else {
+            this._elements.editor?.updateOptions({
+                language: this._options.editor?.monaco?.language
+            });
         }
     }
 
-    nextStep(name?: string) {
-        if (!name) {
-            let index = this._steps.findIndex(step => step.name === this._currentStep?.name) + 1;
-            if (index >= this._steps.length) {
-                index = this._steps.length - 1;
-            }
+    /**
+     * Start step
+     * @param step {string | number} - identifier of step (name or index)
+     */
+    nextStep(step?: string | number) {
+        let name = '';
+
+        if (!step) {
+            const index = Math.min(this._steps.findIndex(step => step.name === this._currentStep?.name) + 1, this._steps.length - 1);
             name = this._steps[index].name;
+        } else {
+            switch (step.constructor) {
+                case String: {
+                    name = step as string;
+                    break;
+                }
+                case Number: {
+                    name = this._steps[step as number].name;
+                    break;
+                }
+            }
         }
+
+        this.startStep(name);
+    }
+
+    /**
+     * Start Previous step
+     */
+    previousStep() {
+        const index = Math.max(this._steps.findIndex(step => step.name === this.currentStep?.name) - 1, 0);
+        const name = this._steps[index].name;
 
         this.startStep(name);
     }
@@ -120,141 +187,5 @@ class Academy {
         return this._steps.some(item => item.name === name);
     }
 }
-
-class AcademyDescriptionElement extends HTMLElement {
-}
-
-class AcademyEditorElement extends HTMLElement {
-    constructor() {
-        super();
-
-        this.type = EditorType.Monaco;
-    }
-
-    type: EditorType;
-    monaco: any;
-    monacoEditor: any;
-    monacoOptions: {
-        [key: string]: any
-    } = {
-        automaticLayout: true,
-        minimap: { enabled: false },
-        autoIndent: true
-    };
-
-    static get observedAttributes() {
-        return ['editor'];
-    }
-
-    set editor(value: EditorType) {
-        if (this.type === value) {
-            return;
-        }
-
-        this.type = value;
-        this.initEditor();
-    }
-
-    get value() {
-        switch (this.type) {
-            case 'custom': {
-                break;
-            }
-            case 'monaco': {
-                return this.monacoEditor.getValue();
-            }
-            case 'textarea': {
-                const textarea = this.querySelector('textarea');
-                return textarea?.value || '';
-            }
-        }
-    }
-
-    attributeChangedCallback(attribute: string, before: string, after: EditorType) {
-        if (before === after) {
-            return;
-        }
-
-        if (attribute === 'editor') {
-            if (this.type !== after) {
-                this.type = after;
-                this.initEditor();
-            }
-        }
-    }
-
-    reset() {
-        switch (this.type) {
-            case 'custom': {
-                break;
-            }
-            case 'monaco': {
-                this.monacoEditor?.getModel()?.setValue('');
-                break;
-            }
-            case 'textarea': {
-                const textarea = this.querySelector('textarea');
-                if (textarea) {
-                    textarea.value = '';
-                }
-                break;
-            }
-        }
-    }
-
-    connectedCallback() {
-        this.initEditor();
-    }
-
-    initEditor() {
-        this.innerHTML = '';
-        switch (this.type) {
-            case 'custom': {
-                break;
-            }
-            case 'monaco': {
-                const element = document.createElement('div');
-                element.style.height = '100px';
-
-                this.appendChild(element);
-
-                loader.init().then((monaco: Monaco) => {
-                    this.monaco = monaco;
-                    this.monacoEditor = monaco.editor.create(element, this.monacoOptions);
-                    this.monacoEditor.focus();
-                });
-                break;
-            }
-            case 'textarea': {
-                this.innerHTML = '<textarea></textarea>';
-            }
-        }
-    }
-
-    updateTheme(theme: string) {
-        if (this.monaco?.editor) {
-            this.monaco.editor.setTheme(theme);
-        } else {
-            this.monacoOptions = {
-                ...this.monacoOptions,
-                theme
-            };
-        }
-    }
-
-    updateLanguage(language: string) {
-        if (this.monaco?.editor) {
-            this.monaco.editor.setModelLanguage(this.monacoEditor?.getModel(), language);
-        } else {
-            this.monacoOptions = {
-                ...this.monacoOptions,
-                language
-            };
-        }
-    }
-}
-
-customElements.define('academy-description', AcademyDescriptionElement);
-customElements.define('academy-editor', AcademyEditorElement);
 
 export default Academy;

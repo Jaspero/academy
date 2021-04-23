@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "jaspero-admin": {
+      "hosting": {
+        "angular": [
+          "jaspero-admin"
+        ]
+      }
+    }
+  }
+}

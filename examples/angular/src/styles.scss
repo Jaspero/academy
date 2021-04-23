@@ -1,4 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
-academy-editor > div {
-  height: 350px;
+@import "scss/modular";
+
+//academy-editor > div {
+//  max-height: 300px !important;
+//}
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.pointer {
+  cursor: pointer;
 }
