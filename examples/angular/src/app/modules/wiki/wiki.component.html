@@ -1,5 +1,7 @@
-<section>
-  <ng-container *ngIf="wiki$ | async as wiki">
-    <div [innerHTML]="wiki.content | jpSanitize" class="p-a-m"></div>
-  </ng-container>
+<section class="p-a-m">
+  <div class="container p-a-xs">
+    <ng-container *ngIf="wiki$ | async as wiki">
+      <div [innerHTML]="wiki.content | jpSanitize"></div>
+    </ng-container>
+  </div>
 </section>
