@@ -1,0 +1,44 @@
+<section>
+<!--  <fb-form-builder #fb></fb-form-builder>-->
+  <ng-container *ngIf="field$ | async as field">
+
+    <section class="grid">
+      <div class="col-3 col-m-12">
+        <academy-description></academy-description>
+        <pre><code [highlight]="field.interface"></code></pre>
+      </div>
+      <div class="col-6 col-m-12">
+        <academy-editor editor="monaco"></academy-editor>
+      </div>
+      <div class="col-3 col-m-12">
+        <fb-form-builder [data]="field.fb" #fb></fb-form-builder>
+<!--        <fb-form-builder [data]="builderData$ | async" #fb></fb-form-builder>-->
+<!--        <ng-template *ngIf="!(builderData$ | async)">-->
+<!--          <div class="flex jc-center">-->
+<!--            <mat-spinner diameter="20"></mat-spinner>-->
+<!--          </div>-->
+<!--        </ng-template>-->
+      </div>
+    </section>
+
+    <div class="flex jc-center">
+      <div>
+        <button mat-icon-button [disabled]="academy?.currentStep?.index === 0" (click)="previous()">
+          <mat-icon>navigate_before</mat-icon>
+        </button>
+      </div>
+      <div *ngIf="academy?.currentStep?.validate">
+        <button mat-raised-button color="warn" (click)="validate()">Validate</button>
+      </div>
+      <div>
+        <button mat-raised-button color="primary" (click)="compile()">Run</button>
+      </div>
+      <div>
+        <button mat-icon-button [disabled]="!academy?.valid || academy?.currentStep?.index === academy?.steps.length - 1" (click)="next()">
+          <mat-icon>navigate_next</mat-icon>
+        </button>
+      </div>
+    </div>
+
+  </ng-container>
+</section>

@@ -86,7 +86,6 @@ class Academy {
     }
 
     clearSteps() {
-        console.log(this);
         this._steps = [];
         this._currentStep = undefined;
         this._elements.editor?.reset();

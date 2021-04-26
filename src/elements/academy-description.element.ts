@@ -1,4 +1,4 @@
 export class AcademyDescriptionElement extends HTMLElement {
 }
 
-customElements.define('academy-description', AcademyDescriptionElement);
+customElements.get('academy-description') || customElements.define('academy-description', AcademyDescriptionElement);

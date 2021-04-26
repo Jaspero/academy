@@ -17,16 +17,18 @@
 
     <mat-tree [dataSource]="sidebar$ | async" [treeControl]="tc">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
-        <li (click)="selectItem(node)" class="pointer">
-          <div>
-            <button mat-icon-button disabled>
-              <mat-icon>
-                remove
-              </mat-icon>
-            </button>
-            {{node.name}}
-          </div>
-        </li>
+        <a [routerLink]="node.navigate" class="pointer w-full">
+          <li>
+            <div>
+              <button mat-icon-button disabled>
+                <mat-icon>
+                  remove
+                </mat-icon>
+              </button>
+              {{node.name}}
+            </div>
+          </li>
+        </a>
       </mat-tree-node>
 
       <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
@@ -36,7 +38,8 @@
               <mat-icon>
                 {{tc.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
               </mat-icon>
-            </button> {{node.name}}
+            </button>
+            {{node.name}}
           </div>
           <ul [hidden]="!tc.isExpanded(node)">
             <ng-container matTreeNodeOutlet></ng-container>
@@ -45,17 +48,17 @@
       </mat-nested-tree-node>
     </mat-tree>
 
-<!--    <mat-tree>-->
-<!--      <mat-tree-node> parent node </mat-tree-node>-->
-<!--      <mat-tree-node> &#45;&#45; child node1 </mat-tree-node>-->
-<!--      <mat-tree-node> &#45;&#45; child node2 </mat-tree-node>-->
-<!--    </mat-tree>-->
-<!--    <mat-selection-list [multiple]="false" [formControl]="state.fieldControl">-->
-<!--      <mat-list-option *ngFor="let field of state.fields$ | async" [value]="field">{{field.name}}</mat-list-option>-->
-<!--    </mat-selection-list>-->
-<!--    <div *ngFor="let field of state.fields$ | async">-->
-<!--      {{ field.name }}-->
-<!--    </div>-->
+    <!--    <mat-tree>-->
+    <!--      <mat-tree-node> parent node </mat-tree-node>-->
+    <!--      <mat-tree-node> &#45;&#45; child node1 </mat-tree-node>-->
+    <!--      <mat-tree-node> &#45;&#45; child node2 </mat-tree-node>-->
+    <!--    </mat-tree>-->
+    <!--    <mat-selection-list [multiple]="false" [formControl]="state.fieldControl">-->
+    <!--      <mat-list-option *ngFor="let field of state.fields$ | async" [value]="field">{{field.name}}</mat-list-option>-->
+    <!--    </mat-selection-list>-->
+    <!--    <div *ngFor="let field of state.fields$ | async">-->
+    <!--      {{ field.name }}-->
+    <!--    </div>-->
   </mat-drawer>
   <mat-drawer-content class="content">
     <router-outlet></router-outlet>

@@ -4,35 +4,32 @@ import { RouterModule, Routes } from '@angular/router';
 import { FormBuilderModule } from '@jaspero/form-builder';
 import { HighlightModule } from 'ngx-highlightjs';
 import { SharedModule } from '../../shared/shared.module';
-import { DashboardComponent } from './dashboard.component';
+import { FieldComponent } from './components/field/field.component';
+import { FieldsComponent } from './fields.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: DashboardComponent
+    component: FieldsComponent
   },
   {
-    path: 'fields',
-    loadChildren: () => import('../fields/fields.module').then(m => m.FieldsModule)
-  },
-  {
-    path: 'wiki',
-    loadChildren: () => import('../wiki/wiki.module').then(m => m.WikiModule)
+    path: ':id',
+    component: FieldComponent
   }
 ]
 
 @NgModule({
   declarations: [
-    DashboardComponent
+    FieldsComponent,
+    FieldComponent
   ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-
     SharedModule,
     FormBuilderModule,
     HighlightModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class DashboardModule { }
+export class FieldsModule { }

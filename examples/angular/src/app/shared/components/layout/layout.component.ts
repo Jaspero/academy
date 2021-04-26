@@ -1,7 +1,8 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { Component, OnInit } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { combineLatest, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { StateService } from '../../services/state/state.service';
 
 interface TestData {
@@ -21,72 +22,26 @@ const TC = new NestedTreeControl(GetChildren);
 export class LayoutComponent implements OnInit {
 
   constructor(
-    public state: StateService
+    public state: StateService,
+    private afs: AngularFirestore
   ) {
   }
 
   tc = TC;
-  data = [
-    {
-      name: 'a',
-      children: [
-        {name: 'g'},
-        {
-          name: 'b',
-          children: [
-            {name: 'e'},
-            {name: 'f'}
-          ]
-        },
-        {
-          name: 'c',
-          children: [
-            {name: 'd'}
-          ]
-        }
-      ]
-    }];
   sidebar$: Observable<any>;
 
   ngOnInit(): void {
-    this.sidebar$ = combineLatest([this.state.fields$]).pipe(
-      map(([fields]) => {
-        return [
-          {
-            name: 'Fields',
-            children: fields.map((field: any) => {
-              return {
-                ...field,
-                parent: 'fields'
-              };
-            })
-          },
-          {
-            name: 'Layout',
-            children: [
-              {
-                name: 'Table'
-              }
-            ]
-          }
-        ];
-      })
+
+    this.sidebar$ = this.afs.doc<{
+      navigation: {
+        items: any[]
+      }
+    }>('settings/docs-layout').valueChanges({idField: 'id'}).pipe(
+      map(layout => layout.navigation.items)
     );
   }
 
-  selectItem(item: any) {
-    console.log({item});
-    switch (item.parent) {
-      case 'fields': {
-        const {parent, ...field} = item;
-        this.state.fieldControl.setValue(field);
-        break;
-      }
-    }
-  }
-
   hasChild(_: number, node: TestData) {
-    console.log(node);
     return node.children != null && node.children.length > 0;
   }
 

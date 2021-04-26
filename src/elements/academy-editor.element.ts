@@ -182,4 +182,4 @@ export class AcademyEditorElement extends HTMLElement {
     }
 }
 
-customElements.define('academy-editor', AcademyEditorElement);
+customElements.get('academy-editor') || customElements.define('academy-editor', AcademyEditorElement);
