@@ -7,11 +7,12 @@
   "scripts": {
     "dev": "tsc-watch --onSuccess \"rollup --config\"",
     "dev:angular": "concurrently --kill-others 'npm run dev' 'npm run start --prefix examples/angular'",
-    "build": "tsc && rollup --config"
+    "build": "tsc && rollup --config",
+    "semantic-release": "npm run build && semantic-release"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jaspero/academy.git"
+    "url": "https://github.com/Jaspero/academy.git"
   },
   "author": {
     "name": "Jaspero Ltd",
@@ -29,7 +30,8 @@
     "rollup": "2.39.0",
     "rollup-plugin-node-resolve": "5.2.0",
     "tsc-watch": "4.2.9",
-    "typescript": "4.1.5"
+    "typescript": "4.1.5",
+    "semantic-release": "^17.4.2"
   },
   "dependencies": {
     "@jaspero/form-builder": "3.21.0",
