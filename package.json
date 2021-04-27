@@ -4,7 +4,6 @@
   "description": "",
   "main": "./dist/academy.js",
   "types": "./dist/index.d.ts",
-  "private": false,
   "scripts": {
     "dev": "tsc-watch --onSuccess \"rollup --config\"",
     "dev:angular": "concurrently --kill-others 'npm run dev' 'npm run start --prefix examples/angular'",
@@ -19,6 +18,9 @@
     "name": "Jaspero Ltd",
     "email": "info@jaspero.co"
   },
+  "keywords": [
+    "jaspero", "academy"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Jaspero/academy/issues"
