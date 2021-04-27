@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: npm i
       - name: Build
-        run: npm run build
+        run: npm run build && cp -r ./dist/. . && rm -rf examples && rm -rf src
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,8 +2,8 @@
   "name": "@jaspero/academy",
   "version": "0.0.0-development",
   "description": "",
-  "main": "./dist/academy.js",
-  "types": "./dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "dev": "tsc-watch --onSuccess \"rollup --config\"",
     "dev:angular": "concurrently --kill-others 'npm run dev' 'npm run start --prefix examples/angular'",
