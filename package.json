@@ -8,7 +8,7 @@
     "dev": "tsc-watch --onSuccess \"rollup --config\"",
     "dev:angular": "concurrently --kill-others 'npm run dev' 'npm run start --prefix examples/angular'",
     "build": "tsc && rollup --config",
-    "semantic-release": "npm run build && semantic-release"
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
